@@ -5,15 +5,12 @@
 # Difficulty: 1/5
 
 def letter_count(str):
-	hash = {}
+	h = {}
 	word_arr = str.split()
 	for word in word_arr:
 		for char in word:
-			if char not in hash:
-				hash[char] = 1
-			else:
-				hash[char] += 1
-	return hash
+			h[char] = h.get(char,0) + 1
+	return h
 
 print "Tests for letter counts in string"
 print letter_count('hello') == {'h': 1, 'e': 1, 'l': 2, 'o': 1}
