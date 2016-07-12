@@ -1,8 +1,34 @@
-class Player
-  attr_accessor :symbol
+require 'byebug'
 
-  def initialize(symbol)
+class Player
+  attr_accessor :symbol, :name
+
+  def initialize(symbol,name)
     @symbol = symbol
+    @name = name
+  end
+
+
+  def select_row
+    puts "#{@name} please select a row: top, middle, or bottom"
+    row = gets.chomp
+    if row != 'top' && row != 'middle' && row != 'bottom'
+      p "There was a typo! Please try again"
+      # Recursive call made to prompt user again for proper input
+      row = select_row
+    end
+    row
+  end
+
+  def select_column
+    puts "#{@name} please select a column: left, center, or right"
+    column = gets.chomp
+    if column != "left" && column != "center" && column != "right"
+      p "There was a typo! Please try again"
+      # Recursive call made to prompt user again for proper input
+      column = select_column
+    end
+    column
   end
 
 end
@@ -16,6 +42,23 @@ class Board
       ["-","-","-"],
       ["-","-","-"]
     ]
+        # Users will input english words, so we need to translate them to indexes on board
+    @rows_eng_to_idx = {
+      'top'=>0,
+      'middle'=>1,
+      'bottom'=>2
+    }
+    @columns_eng_to_idx = {
+      'left'=>0,
+      'center'=>1,
+      'right'=>2
+    }
+  end
+
+  def translate(row_english,column_english)
+    row = @rows_eng_to_idx[row_english]
+    column = @columns_eng_to_idx[column_english]
+    return row,column
   end
 
   def get_cell(row,column)
@@ -43,13 +86,6 @@ class Board
 
 end
 
-def select_location(player)
-  puts "#{player} please select row: 0,1,or 2"
-  row = gets.chomp.to_i
-  puts "And please select a column: 0,1,or 2 "
-  column = gets.chomp.to_i
-  return row,column
-end
 
 # winning_positions
 
@@ -63,7 +99,7 @@ def won?(board,symbol)
     end
   end
   # Same symbol for entire column
-  board.spaces.transpose.each do |row|
+  board.spaces.transpose.each do |row| # transpose method flips rows into columns that is arrays are now grouped as columns
     if row.all? { |cell| cell == symbol }
       return true
     end
@@ -86,25 +122,28 @@ def play(board,*players)
     players.each do |player|
       symbol = player.symbol
       board.display_board
-      row,column = select_location(player)
-      if row > 2 || row < 0 || column < 0 || column > 2
-        puts "your row and columns must be between 0 and 2. Please try again #{player} !"
-      elsif !empty_cell?(board,row,column)
-        puts "spot already filled! Skip to next player for your carelessness #{player} !"
+      # Get human coordinates
+      row,column = player.select_row, player.select_column
+      # Translate into indexes on board
+      row,column = board.translate(row,column)
+      if !empty_cell?(board,row,column)
+        puts "Spot already filled! Skip to next player for your carelessness #{player.name} !"
       else
         board.update_board(row,column,symbol)
       end
-      turns += 1
       if won?(board,symbol) == true
         board.display_board
-        return "winner, winner, chicken dinner!"
+        p "winner, winner, chicken dinner #{player.name}!"
+        # Break out of while loop 
+        return
       end
+      turns += 1
     end
   end
 end
 
 # Loads game
 board = Board.new
-player1 = Player.new("X")
-player2 = Player.new("O")
+player1 = Player.new("X", "John")
+player2 = Player.new("O", "Bob")
 play(board,player1,player2)
