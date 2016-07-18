@@ -8,25 +8,24 @@ class Player
     @name = name
   end
 
-
-  def select_row
+  def select_row(board)
     puts "#{@name} please select a row: top, middle, or bottom"
     row = gets.chomp
-    if row != 'top' && row != 'middle' && row != 'bottom'
+    if !board.valid_inputs_row.include?(row)
       p "There was a typo! Please try again"
       # Recursive call made to prompt user again for proper input
-      row = select_row
+      row = select_row(board)
     end
     row
   end
 
-  def select_column
+  def select_column(board)
     puts "#{@name} please select a column: left, center, or right"
     column = gets.chomp
-    if column != "left" && column != "center" && column != "right"
+    if !board.valid_inputs_col.include?(column)
       p "There was a typo! Please try again"
       # Recursive call made to prompt user again for proper input
-      column = select_column
+      column = select_column(board)
     end
     column
   end
@@ -34,25 +33,28 @@ class Player
 end
 
 class Board
-  attr_accessor :spaces
+  attr_accessor :spaces, :players
+  attr_reader :valid_inputs_col, :valid_inputs_row
 
   def initialize
+    # Create spaces on board
     @spaces = [
       ["-","-","-"],
       ["-","-","-"],
       ["-","-","-"]
     ]
-        # Users will input english words, so we need to translate them to indexes on board
-    @rows_eng_to_idx = {
-      'top'=>0,
-      'middle'=>1,
-      'bottom'=>2
-    }
-    @columns_eng_to_idx = {
-      'left'=>0,
-      'center'=>1,
-      'right'=>2
-    }
+    # Create two players needed to play game, as well as array of players
+    @player1 = Player.new("X", "John")
+    @player2 = Player.new("O", "Bob")
+    @players = [@player1, @player2]
+    # Users will input english words, so we need to translate them to indexes on board
+    @valid_inputs_row = ['top', 'middle', 'bottom']
+    @valid_inputs_col = ['left', 'center', 'right']
+    # Hash Constructor accepts array of key values pairs
+    # Map over each possible input with index that will be the val
+    @rows_eng_to_idx = Hash[@valid_inputs_row.each_with_index.map { |input, index| [input, index]} ]
+    @columns_eng_to_idx = Hash[@valid_inputs_col.each_with_index.map { |input, index| [input, index]} ]
+
   end
 
   def translate(row_english,column_english)
@@ -116,14 +118,14 @@ def empty_cell?(board,row,column)
   return board.get_cell(row,column) == "-"
 end
 
-def play(board,*players)
+def play(board)
   turns = 0
   while turns < 9
-    players.each do |player|
+    board.players.each do |player|
       symbol = player.symbol
       board.display_board
       # Get human coordinates
-      row,column = player.select_row, player.select_column
+      row,column = player.select_row(board), player.select_column(board)
       # Translate into indexes on board
       row,column = board.translate(row,column)
       if !empty_cell?(board,row,column)
@@ -134,7 +136,7 @@ def play(board,*players)
       if won?(board,symbol) == true
         board.display_board
         p "winner, winner, chicken dinner #{player.name}!"
-        # Break out of while loop 
+        # Break out of while loop
         return
       end
       turns += 1
@@ -144,6 +146,4 @@ end
 
 # Loads game
 board = Board.new
-player1 = Player.new("X", "John")
-player2 = Player.new("O", "Bob")
-play(board,player1,player2)
+play(board)
