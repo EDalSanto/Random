@@ -21,7 +21,9 @@ class Polynomial:
 		diff_detective = abs(len(self.coeffs) - len(other.coeffs))
 		new_coeffs[:diff_detective] = biggest.get_coeff()[:diff_detective]
 		for cf in xrange(diff_detective, len(biggest.get_coeff())):
-			new_coeffs[cf] = biggest.coeff(biggest.power_detective(cf)) + smallest.coeff(smallest.power_detective(cf - diff_detective))
+			biggest_val = biggest.coeff(biggest.power_detective(cf)) 
+			smallest_val = smallest.coeff(smallest.power_detective(cf - diff_detective))
+			new_coeffs[cf] = biggest_val + smallest_val	
 		np = Polynomial(new_coeffs)
 		return np
 
