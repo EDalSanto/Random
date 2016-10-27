@@ -27,13 +27,32 @@ class Polynomial:
 		np = Polynomial(new_coeffs)
 		return np
 
-#	def	mul(self, other):
+	def	mul(self, other):
+		mult_dict = {}
+		new_coeffs = []
+		for cf_other in xrange(len(other.coeffs)):
+			for cf_self in xrange(len(self.coeffs)): 
+				other_coeff = other.coeff(other.power_detective(cf_other))
+				self_coeff = self.coeff(self.power_detective(cf_self))
+				new_coeff = other_coeff * self_coeff
+				new_pow = other.power_detective(cf_other) + self.power_detective(cf_self)
+				if (new_pow in mult_dict):
+					mult_dict[new_pow] += new_coeff
+				else:
+					mult_dict[new_pow] = new_coeff
+		for key in sorted(mult_dict, reverse=True):
+			new_coeffs.append(mult_dict[key])	
+		np = Polynomial(new_coeffs)
+		return np
+					
 
 	
 if __name__=='__main__':
 	p1 = Polynomial([1, 2, 3])
 	p2 = Polynomial([100, 200, 300, 400])
-	p3 = p1.add(p2) 
-	print "test adding big to small: %s" % (p3.get_coeff() == [100, 201, 302, 403]) 
-	p4 = p2.add(p1)
-	print "test adding big to small: %s" % (p4.get_coeff() == [100, 201, 302, 403]) 
+#	p3 = p1.add(p2) 
+#	print "test adding big to small: %s" % (p3.get_coeff() == [100, 201, 302, 403]) 
+#	p4 = p2.add(p1)
+#	print "test adding big to small: %s" % (p4.get_coeff() == [100, 201, 302, 403]) 
+	p3 = p1.mul(p2)
+	print "multiplied p1 by p2: %s" % (p3.get_coeff())
