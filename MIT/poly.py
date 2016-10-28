@@ -44,7 +44,19 @@ class Polynomial:
 			new_coeffs.append(mult_dict[key])	
 		np = Polynomial(new_coeffs)
 		return np
-					
+
+	def __str__(self):
+		new_str = ""
+		for i, cf in enumerate(self.coeffs):
+			print cf
+			new_str += str(cf)
+			if (i < len(self.coeffs) - 2):
+				new_str += (".000 z**%d + " % (self.power_detective(i)))
+			elif (i < len(self.coeffs) - 1):
+				new_str += (".000 z + ")
+			else:
+				new_str += (".000" )
+		return new_str
 
 	
 if __name__=='__main__':
@@ -56,3 +68,4 @@ if __name__=='__main__':
 #	print "test adding big to small: %s" % (p4.get_coeff() == [100, 201, 302, 403]) 
 	p3 = p1.mul(p2)
 	print "multiplied p1 by p2: %s" % (p3.get_coeff())
+	print p3
