@@ -58,6 +58,11 @@ class Polynomial:
 				new_str += (".000" )
 		return new_str
 
+	def val(self, v):
+		res = 0
+		for i, cf in enumerate(self.coeffs):
+			res += v**self.power_detective(i) * cf	
+		return res
 	
 if __name__=='__main__':
 	p1 = Polynomial([1, 2, 3])
@@ -68,4 +73,6 @@ if __name__=='__main__':
 #	print "test adding big to small: %s" % (p4.get_coeff() == [100, 201, 302, 403]) 
 	p3 = p1.mul(p2)
 	print "multiplied p1 by p2: %s" % (p3.get_coeff())
-	print p3
+	print "p3: %s" % (p3)
+	eval_3 = p1.val(3)	
+	print "p1 evaluated with 3 is: %d" % (eval_3)
